@@ -24,7 +24,10 @@ export const generateRegisterOptions = async (req, res) => {
       attestationType: "none",
 
       authenticatorSelection: {
-        authenticatorAttachment: "platform",
+        authenticatorSelection: {
+  residentKey: "preferred",
+  userVerification: "required"
+}
         residentKey: "preferred",
         userVerification: "required"
       },
