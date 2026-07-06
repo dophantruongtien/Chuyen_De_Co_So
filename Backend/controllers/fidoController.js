@@ -24,10 +24,6 @@ export const generateRegisterOptions = async (req, res) => {
       attestationType: "none",
 
       authenticatorSelection: {
-        authenticatorSelection: {
-  residentKey: "preferred",
-  userVerification: "required"
-}
         residentKey: "preferred",
         userVerification: "required"
       },
@@ -65,13 +61,18 @@ export const verifyRegister = async (req, res) => {
     const { verified, registrationInfo } = verification;
 
     if (verified && registrationInfo) {
-      const { credential } = registrationInfo;
+      const { credential, credentialDeviceType, credentialBackedUp } =
+        registrationInfo;
 
       user.fidoCredentials.push({
         credentialID: credential.id,
         credentialPublicKey: Buffer.from(credential.publicKey).toString("base64"),
         counter: credential.counter,
-        transports: credential.transports || []
+        transports: credential.transports || [],
+        authenticatorAttachment: req.body.authenticatorAttachment || "",
+        credentialDeviceType: credentialDeviceType || "",
+        credentialBackedUp: Boolean(credentialBackedUp),
+        registeredOrigin: process.env.ORIGIN || ""
       });
 
       user.currentChallenge = null;

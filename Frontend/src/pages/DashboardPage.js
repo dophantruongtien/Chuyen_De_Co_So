@@ -117,29 +117,26 @@ function renderCredentialList(credentials) {
   }
 
   return credentials
-    .map((credential, index) => {
-      const transports = credential.transports?.length
-        ? credential.transports.join(", ")
-        : "Không rõ";
-
-      return `
-        <div class="passkey-item">
-          <div>
-            <b>Khóa truy cập ${index + 1}</b>
-            <p>ID: ${formatCredentialID(credential.credentialID)}</p>
-            <p>Thiết bị: ${escapeHTML(transports)}</p>
-          </div>
-
-          <button
-            class="delete-passkey-btn"
-            type="button"
-            data-credential-id="${escapeHTML(credential._id)}"
-          >
-            Xóa
-          </button>
+    .map((credential, index) => `
+      <div class="passkey-item">
+        <div>
+          <b>Khóa truy cập ${index + 1}</b>
+          <p>ID: ${formatCredentialID(credential.credentialID)}</p>
+          <p>Dạng khóa: ${formatCredentialType(credential)}</p>
+          <p>Cách kết nối: ${formatTransports(credential.transports)}</p>
+          <p>Thêm lúc: ${formatDateTime(credential.createdAt)}</p>
+          <p>Nơi đăng ký: ${formatRegisteredOrigin(credential.registeredOrigin)}</p>
         </div>
-      `;
-    })
+
+        <button
+          class="delete-passkey-btn"
+          type="button"
+          data-credential-id="${escapeHTML(credential._id)}"
+        >
+          Xóa
+        </button>
+      </div>
+    `)
     .join("");
 }
 
@@ -151,6 +148,67 @@ function formatCredentialID(credentialID = "") {
   return `${escapeHTML(credentialID.slice(0, 8))}...${escapeHTML(
     credentialID.slice(-6)
   )}`;
+}
+
+function formatCredentialType(credential) {
+  if (credential.authenticatorAttachment === "platform") {
+    return "Thiết bị tích hợp";
+  }
+
+  if (credential.authenticatorAttachment === "cross-platform") {
+    return "Khóa bảo mật rời";
+  }
+
+  if (credential.credentialDeviceType === "singleDevice") {
+    return "Một thiết bị";
+  }
+
+  if (credential.credentialDeviceType === "multiDevice") {
+    return credential.credentialBackedUp
+      ? "Đồng bộ nhiều thiết bị"
+      : "Nhiều thiết bị";
+  }
+
+  return "Không rõ";
+}
+
+function formatTransports(transports = []) {
+  if (!transports.length) {
+    return "Không rõ";
+  }
+
+  const labels = {
+    internal: "Nội bộ máy",
+    usb: "USB",
+    nfc: "NFC",
+    ble: "Bluetooth",
+    hybrid: "Điện thoại / thiết bị khác"
+  };
+
+  return transports.map((transport) => labels[transport] || transport).join(", ");
+}
+
+function formatDateTime(value) {
+  if (!value) {
+    return "Không rõ";
+  }
+
+  return new Intl.DateTimeFormat("vi-VN", {
+    dateStyle: "medium",
+    timeStyle: "short"
+  }).format(new Date(value));
+}
+
+function formatRegisteredOrigin(origin = "") {
+  if (!origin) {
+    return "Không rõ";
+  }
+
+  try {
+    return escapeHTML(new URL(origin).host);
+  } catch {
+    return escapeHTML(origin);
+  }
 }
 
 async function registerPasskey() {
@@ -230,7 +288,7 @@ async function deletePasskey(credentialId) {
       }
     );
 
-    const result = await response.json();
+    const result = await parseJSONResponse(response);
 
     if (!response.ok) {
       throw new Error(result.message || "Không xóa được khóa truy cập");
@@ -256,4 +314,25 @@ function escapeHTML(value = "") {
 
     return entities[character];
   });
+}
+
+async function parseJSONResponse(response) {
+  const contentType = response.headers.get("content-type") || "";
+
+  if (contentType.includes("application/json")) {
+    return response.json();
+  }
+
+  const text = await response.text();
+
+  if (text.includes("<!DOCTYPE") || text.includes("<html")) {
+    return {
+      message:
+        "API xóa khóa không trả về JSON. Hãy kiểm tra backend đã chạy lại và đúng URL API chưa."
+    };
+  }
+
+  return {
+    message: text || "Phản hồi API không hợp lệ"
+  };
 }

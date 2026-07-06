@@ -1,11 +1,20 @@
 import mongoose from "mongoose";
 
-const credentialSchema = new mongoose.Schema({
-  credentialID: String,
-  credentialPublicKey: String,
-  counter: Number,
-  transports: [String]
-});
+const credentialSchema = new mongoose.Schema(
+  {
+    credentialID: String,
+    credentialPublicKey: String,
+    counter: Number,
+    transports: [String],
+    authenticatorAttachment: String,
+    credentialDeviceType: String,
+    credentialBackedUp: Boolean,
+    registeredOrigin: String
+  },
+  {
+    timestamps: true
+  }
+);
 
 const userSchema = new mongoose.Schema(
   {
