@@ -95,8 +95,10 @@ export const login = async (req, res) => {
 };
 
 export const dashboard = async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id).select("-password");
+  try { 
+    const user = await User.findById(req.user.id).select(
+      "-password -currentChallenge -fidoCredentials.credentialPublicKey"
+    );
 
     res.json(user);
   } catch (error) {

@@ -86,6 +86,33 @@ export const verifyRegister = async (req, res) => {
   }
 };
 
+export const deleteCredential = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    const { credentialId } = req.params;
+
+    const credential = user.fidoCredentials.id(credentialId);
+
+    if (!credential) {
+      return res.status(404).json({
+        message: "Passkey not found"
+      });
+    }
+
+    credential.deleteOne();
+    await user.save();
+
+    res.json({
+      message: "Passkey deleted",
+      credentialId
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message
+    });
+  }
+};
+
 export const generateLoginOptions = async (req, res) => {
   try {
     const { email } = req.body;

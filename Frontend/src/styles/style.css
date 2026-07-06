@@ -529,6 +529,82 @@ button {
   color: #6b7280;
 }
 
+.passkey-status {
+  margin-top: 14px;
+  color: #2563eb;
+  font-weight: 700;
+}
+
+.passkey-section {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.passkey-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.passkey-section-header h3 {
+  margin: 0;
+}
+
+.passkey-section-header span {
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.passkey-list {
+  display: grid;
+  gap: 12px;
+}
+
+.passkey-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: white;
+}
+
+.passkey-item p {
+  margin-top: 5px;
+  color: #6b7280;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.delete-passkey-btn {
+  flex: 0 0 auto;
+  border: none;
+  border-radius: 10px;
+  background: #fee2e2;
+  color: #b91c1c;
+  cursor: pointer;
+  font-weight: 900;
+  padding: 10px 14px;
+}
+
+.delete-passkey-btn:hover {
+  background: #fecaca;
+}
+
+.empty-passkey {
+  padding: 14px;
+  border: 1px dashed #d1d5db;
+  border-radius: 12px;
+  color: #6b7280;
+  background: #f9fafb;
+}
+
 .stat-number {
   font-size: 42px;
   font-weight: 900;
@@ -657,6 +733,16 @@ button {
   .info-row {
     flex-direction: column;
     gap: 5px;
+  }
+
+  .passkey-section-header,
+  .passkey-item {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .delete-passkey-btn {
+    width: 100%;
   }
 
   .footer {
