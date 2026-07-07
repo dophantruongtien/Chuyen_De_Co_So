@@ -15,6 +15,7 @@ app.use(
     origin: [
       "http://localhost:5173",
       "https://www.dophantruongtien.io.vn"
+      "https://fakeweb-self.vercel.app/"
     ],
     credentials: true
   })
